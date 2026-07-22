@@ -29,6 +29,15 @@ uniformity (`aniso_w_cv`), and measurement validity (`fit_success`,
 `agreement_ratio`). Known blind spot (accepted): bulk plateau ripples
 (mild, DiT) — deliberately out of scope for now.
 
+Spectral bridge: the theory references (spectral bias, Fourier-space SNR)
+speak in k-space, while all metrics above live in real space — deliberate,
+since direct spectral estimation on point data is noisy and under the
+Gaussian-blur model the erf width is the sufficient statistic. The mapping
+is `w_gen` ↔ effective frequency cutoff `k* ≈ 1/w_gen`: a Gaussian blur of
+width `w` multiplies the target spectrum by `exp(−k²w²/2)`. T/N sweep
+results are compared against theory predictions (e.g. `τ* ∝ λ_k⁻¹`)
+through this mapping.
+
 ## 2. Datasets (2-D targets)
 
 ![datasets](figures/fig_datasets.png)
@@ -86,6 +95,15 @@ metrics, in the converged-sampler regime:
 | 9 | seed | 3 used → 10 planned | ±10% on `w_fit` (ResMLP); up to ±40% for plain/dit_s |
 | 10 | lr / batch / grad-clip | 3e-4 / 4096 / 1.0 fixed | Optimization noise; second-order once converged; deliberately constant across sweeps |
 | 11 | `n_gen` (measurement) | 1M (20k smoke) | Measurement precision only; z>3 tail counts need ≥1M for ~15% Poisson error |
+
+Training-side signal: during the T/N sweeps also record training-loss
+curves, time-resolved (binned by `t`, especially `t → 1` where the edge
+forms). Caveat — the global FM objective is known **not** to reflect
+physics/edge error (ScatterPrism reported exactly this loss, and it is
+blind to edge defects): a flat total loss can coexist with a wide `w_gen`.
+The point of recording is the "loss estimator" half of the project goal —
+testing whether any loss-derived quantity (late-`t` bins) predicts the
+edge metrics, not treating the loss itself as a quality measure.
 
 Untested knobs worth remembering (all currently held at a fixed default):
 sampling time-grid spacing (uniform vs cosine — biases late-time steps that
