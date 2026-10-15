@@ -1,6 +1,7 @@
 name = "09_hardware"
 
 [measure]
+nfe = [2048]
 measure_ckpts = ["100"]
 sample_precision = "fp32"
 

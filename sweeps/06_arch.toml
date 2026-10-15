@@ -1,5 +1,9 @@
 name = "06_arch"
 
+[measure]
+nfe = [2048]
+sample_precision = "fp32"
+
 [[grid]]
 hidden = [64, 128, 256, 512, 1024]
 seed = [0, 1, 2]

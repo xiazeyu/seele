@@ -1,6 +1,8 @@
 name = "03_steps"
 
 [measure]
+nfe = [2048]
+sample_precision = "fp32"
 measure_ckpts = ["025", "050", "075", "100", "best"]
 
 [[grid]]

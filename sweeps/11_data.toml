@@ -1,6 +1,8 @@
 name = "11_data"
 
 [measure]
+nfe = [2048]
+sample_precision = "fp32"
 measure_ckpts = ["100"]
 nn_band = 0.03
 

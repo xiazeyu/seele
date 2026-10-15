@@ -1,6 +1,7 @@
 name = "05_precision"
 
 [measure]
+nfe = [2048]
 sample_precision = "fp32"
 
 [[grid]]

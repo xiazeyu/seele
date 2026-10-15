@@ -1,5 +1,9 @@
 name = "07_cond"
 
+[measure]
+nfe = [2048]
+sample_precision = "fp32"
+
 [[grid]]
 time_cond = ["concat", "film", "adaln"]
 seed = [0, 1, 2]
@@ -10,5 +14,5 @@ seed = [0, 1, 2]
 
 [[grid]]
 param = ["v", "x1", "x0"]
-nfe = [512, 1024, 2048, 4096]
+nfe = [512, 1024, 2048, 4096, 8192]
 seed = [0, 1, 2]
