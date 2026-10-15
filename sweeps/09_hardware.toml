@@ -1,0 +1,10 @@
+name = "09_hardware"
+
+[measure]
+measure_ckpts = ["100"]
+sample_precision = "fp32"
+
+[[grid]]
+lr = [1e-3, 8e-3]
+precision = ["fp32", "tf32", "bf16", "fp16"]
+seed = [0, 1, 2]

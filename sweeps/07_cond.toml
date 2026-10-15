@@ -1,0 +1,14 @@
+name = "07_cond"
+
+[[grid]]
+time_cond = ["concat", "film", "adaln"]
+seed = [0, 1, 2]
+
+[[grid]]
+act = ["silu", "relu", "gelu"]
+seed = [0, 1, 2]
+
+[[grid]]
+param = ["v", "x1", "x0"]
+nfe = [512, 1024, 2048, 4096]
+seed = [0, 1, 2]

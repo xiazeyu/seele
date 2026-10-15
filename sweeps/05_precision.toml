@@ -1,0 +1,15 @@
+name = "05_precision"
+
+[measure]
+sample_precision = "fp32"
+
+[[grid]]
+precision = ["fp32", "tf32", "bf16", "fp16"]
+seed = [0, 1, 2]
+
+[[grid]]
+precision = ["fp32", "tf32", "bf16", "fp16"]
+lr    = [2e-3,   2.5e-4]
+steps = [1024000, 64000]
+zip = ["lr", "steps"]
+seed = [0, 1, 2]

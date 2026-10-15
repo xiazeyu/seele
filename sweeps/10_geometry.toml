@@ -1,0 +1,20 @@
+name = "10_geometry"
+
+[base]
+dataset = "iface30"
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [512, 1024]
+
+[[grid]]
+lr = [2.5e-4, 1e-3, 1e-3, 4e-3]
+steps = [32000, 256000, 1024000, 512000]
+zip = ["lr", "steps"]
+seed = [0, 1, 2]
+
+[[grid]]
+dataset = "disc"
+lr = 2.5e-4
+steps = 32000
+seed = [0, 1, 2]

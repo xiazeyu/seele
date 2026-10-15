@@ -1,0 +1,15 @@
+name = "11_data"
+
+[measure]
+measure_ckpts = ["100"]
+nn_band = 0.03
+
+[[grid]]
+n_train = [1000, 10000, 500000]
+steps = [64000, 512000]
+seed = [0, 1, 2]
+
+[[grid]]
+steps = [2048000]
+nfe = [512, 1024, 2048]
+seed = [0, 1, 2]

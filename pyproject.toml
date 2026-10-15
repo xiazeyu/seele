@@ -1,0 +1,12 @@
+[project]
+name = "seele"
+version = "0.1.0"
+readme = "README.md"
+authors = [
+    { name = "Zeyu Xia", email = "zeyu.xia@virginia.edu" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "scipy",
+    "torch",
+]
