@@ -1,0 +1,20 @@
+name = "15_hardware_bridge"
+
+[base]
+steps = 4000
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [512, 1024]
+nn_band = 0.03
+
+[[grid]]
+batch = [4096, 4194304]
+seed = 0
+
+[[grid]]
+hidden = 1024
+depth = 7
+batch = 262144
+precision = "fp32"
+seed = 0

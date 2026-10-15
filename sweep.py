@@ -179,7 +179,10 @@ def cmd_status(args: argparse.Namespace) -> int:
         if phase != "done" or args.verbose:
             print(f"{d.name} {phase:12} step={status.get('step', '?')}/{status.get('total_steps', '?')} "
                   f"age={age:.0f}s loss={status.get('loss', '-')} w={status.get('w_fit', '-')} "
-                  f"fit_valid={status.get('fit_valid', '-')} ETA_train_s={status.get('eta_train_s', '-')}")
+                  f"fit_valid={status.get('fit_valid', '-')} metric={status.get('metric_source', '-')} "
+                  f"metric_step={status.get('metric_step', '-')} "
+                  f"peak_alloc/reserved_GiB={status.get('peak_allocated_gib', '-')}/{status.get('peak_reserved_gib', '-')} "
+                  f"ETA_train_s={status.get('eta_train_s', '-')}")
     print(totals)
     return 0
 
@@ -227,7 +230,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         gpus = select_gpus(args.gpus)
         for g in gpus:
             for _ in range(args.per_gpu):
-                env = {**os.environ, **({"CUDA_VISIBLE_DEVICES": g} if g else {})}
+                env = {**os.environ, "SEELE_WORKERS_PER_GPU": str(args.per_gpu),
+                       **({"CUDA_VISIBLE_DEVICES": g} if g else {})}
                 cmd = [sys.executable, "-B", __file__, "worker", *args.sweeps, "--runs", args.runs]
                 cmd += ["--log-every", str(args.log_every), "--checkpoint-every", str(args.checkpoint_every),
                         "--time-budget", str(args.time_budget)]

@@ -1,0 +1,26 @@
+name = "13_batch_extreme_a100"
+
+[base]
+steps = 4000
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [512, 1024]
+nn_band = 0.03
+
+[[grid]]
+batch = [4096, 131072, 262144, 524288, 1048576, 2097152, 4194304]
+seed = [0, 1, 2]
+
+[[grid]]
+batch = [131072, 4194304]
+n_train = [500000, 2000000, 8000000]
+data_seed = [0, 1, 2]
+seed = 0
+
+[[grid]]
+hidden = 1024
+depth = 7
+batch = [262144, 524288]
+precision = ["fp32", "tf32"]
+seed = 0

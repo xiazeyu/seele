@@ -35,7 +35,7 @@ def profile_rows(base: dict[str, Any], profile: dict[str, Any], kind: str) -> li
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="runs/*/result.json -> flat csv (one row per measurement)")
-    ap.add_argument("--runs", default="runs")
+    ap.add_argument("--runs", nargs="+", default=["runs"], help="one or more separate run roots; preserve hardware replicates")
     ap.add_argument("--out", default="-")
     ap.add_argument("--evals", help="also write the in-training quick evals to this csv")
     ap.add_argument("--losses", help="training loss curves from completed training phases")
@@ -43,12 +43,22 @@ def main() -> None:
     args = ap.parse_args()
 
     rows, evals, losses, profiles = [], [], [], []
-    for p in sorted(Path(args.runs).glob("*/result.json")):
+    roots = dict.fromkeys(Path(root).resolve() for root in args.runs)
+    for p in (p for root in roots for p in sorted(root.glob("*/result.json"))):
         r = json.loads(p.read_text())
         if r.get("schema_version") != 1 or r.get("measure_protocol") != PROTOCOL:
             raise ValueError(f"incompatible result/measurement protocol: {p}")
         sweeps = (p.parent / "sweeps.txt").read_text().split() if (p.parent / "sweeps.txt").exists() else []
-        base = dict(run_id=r["run_id"], sweeps=";".join(sweeps), **r["train"], **r["timing"],
+        memory_path = p.parent / "memory.json"
+        memory = json.loads(memory_path.read_text()) if memory_path.exists() else r.get("memory", {})
+        memory_cols = {f"{'train' if phase == 'train' else 'measure_all'}_{k}": v for phase in ("train", "measure")
+                       for k, v in memory.get(phase, {}).items()}
+        for k in ("peak_allocated_gib", "peak_reserved_gib"):
+            values = [memory.get(phase, {}).get(k) for phase in ("train", "measure")]
+            memory_cols[f"run_{k}"] = max((v for v in values if v is not None), default=None)
+        base = dict(run_id=r["run_id"], run_root=str(p.parent.parent), sweeps=";".join(sweeps),
+                    **r["train"], **r["timing"], **memory_cols,
+                    train_workers_per_gpu_sessions=[s.get("workers_per_gpu") for s in r.get("sessions", [r["env"]])],
                     best_step=r["best"]["step"], n_parameters=r["n_parameters"], **r["eval_config"],
                     **{f"fit_{k}": v for k, v in r["measure_protocol"].items()},
                     **{f"train_{k}": v for k, v in r["env"].items()})
@@ -72,7 +82,7 @@ def main() -> None:
         if path is None:
             continue
         write_csv(path, data)
-    print(f"{len(rows)} measurements from {len(set(r['run_id'] for r in rows))} runs", file=sys.stderr)
+    print(f"{len(rows)} measurements from {len(set((r['run_root'], r['run_id']) for r in rows))} runs", file=sys.stderr)
 
 
 if __name__ == "__main__":

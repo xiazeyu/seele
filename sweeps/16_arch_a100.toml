@@ -1,0 +1,19 @@
+name = "16_arch_extreme_a100"
+
+[base]
+steps = 4000
+batch = 4096
+seed = 0
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [512, 1024]
+nn_band = 0.03
+
+[[grid]]
+hidden = [1024, 2048, 4096]
+depth = 7
+
+[[grid]]
+hidden = 1024
+depth = [14, 28]
