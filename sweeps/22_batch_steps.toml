@@ -1,0 +1,17 @@
+name = "22_batch_steps"
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [1024, 2048]
+sample_precision = "fp32"
+nn_band = 0.03
+
+[[grid]]
+batch = [4096, 131072, 1048576]
+steps = [4000, 16000, 64000]
+seed = [0, 1, 2]
+
+[[grid]]
+batch = 4194304
+steps = 16000
+seed = [0, 1, 2]

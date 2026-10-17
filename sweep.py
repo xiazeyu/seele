@@ -190,6 +190,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 def cmd_worker(args: argparse.Namespace) -> int:
     jobs = load(args.sweeps)
     runs, completed, failed = Path(args.runs), set(), 0
+    skipped_failed = set()
     next_notice = 0.0
     deadline = time.monotonic() + args.time_budget if args.time_budget else None
     while jobs:
@@ -199,6 +200,11 @@ def cmd_worker(args: argparse.Namespace) -> int:
                 print("worker time budget reached; rerun the same command to continue", flush=True)
                 return int(failed > 0)
             d = run_dir(runs, cfg)
+            if args.skip_failed and (d / "FAILED").exists():
+                if d.name not in skipped_failed:
+                    print(f"[{d.name}] skipping recorded FAILED run; inspect before retrying", flush=True)
+                    skipped_failed.add(d.name)
+                continue
             try:
                 if train.run(cfg, d, sweep=name, log=lambda s: print(s, flush=True),
                              log_every=args.log_every, checkpoint_every=args.checkpoint_every,
@@ -213,13 +219,17 @@ def cmd_worker(args: argparse.Namespace) -> int:
                 failed += 1
                 print(f"[{d.name}] FAILED: {e!r}", flush=True)
         jobs = busy
+        if jobs and args.exit_when_busy:
+            count = len({run_dir(runs, cfg) for _, cfg in jobs})
+            print(f"leaving {count} locked runs to their owners; rerun plan after all workers finish", flush=True)
+            break
         if jobs:
             if time.monotonic() >= next_notice:
                 count = len({run_dir(runs, cfg) for _, cfg in jobs})
                 print(f"waiting for {count} locked runs; inspect with plan/unlock if the owner has stopped", flush=True)
                 next_notice = time.monotonic() + 60
             time.sleep(1)
-    print(f"worker done, {len(completed)} runs, {failed} failed", flush=True)
+    print(f"worker done, {len(completed)} runs, {failed} failed, {len(skipped_failed)} recorded failures skipped", flush=True)
     return int(failed > 0)
 
 
@@ -235,6 +245,8 @@ def cmd_run(args: argparse.Namespace) -> int:
                 cmd = [sys.executable, "-B", __file__, "worker", *args.sweeps, "--runs", args.runs]
                 cmd += ["--log-every", str(args.log_every), "--checkpoint-every", str(args.checkpoint_every),
                         "--time-budget", str(args.time_budget)]
+                cmd += [flag for flag, enabled in (("--skip-failed", args.skip_failed),
+                                                    ("--exit-when-busy", args.exit_when_busy)) if enabled]
                 procs.append(subprocess.Popen(cmd, env=env, start_new_session=True))
         while True:
             rc = [p.poll() for p in procs]
@@ -308,6 +320,10 @@ def main() -> None:
     sub.choices["run"].add_argument("--gpus", default="", help="auto, or comma-separated GPU indices/full UUIDs; filters DGX Display")
     sub.choices["run"].add_argument("--per-gpu", type=int, default=1)
     for name in ("run", "worker"):
+        sub.choices[name].add_argument("--skip-failed", action="store_true",
+                                       help="leave recorded FAILED runs for manual diagnosis instead of retrying")
+        sub.choices[name].add_argument("--exit-when-busy", action="store_true",
+                                       help="exit after one pass if only runs locked by other workers remain")
         sub.choices[name].add_argument("--log-every", type=int, default=1000)
         sub.choices[name].add_argument("--checkpoint-every", type=int, default=10_000)
         sub.choices[name].add_argument("--time-budget", type=float, default=0,

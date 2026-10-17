@@ -1,0 +1,25 @@
+name = "20_precision"
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [2048]
+sample_precision = "fp32"
+
+[[grid]]
+precision = ["fp32", "tf32", "bf16", "fp16"]
+lr = [5e-4, 1e-3]
+steps = [256000, 1024000]
+seed = [0, 1, 2]
+
+[[grid]]
+precision = ["fp32", "tf32", "bf16"]
+lr = 2e-3
+steps = [256000, 1024000]
+seed = [0, 1, 2]
+
+[[grid]]
+time_cond = "film"
+precision = ["fp32", "tf32", "bf16", "fp16"]
+lr = 1e-3
+steps = [256000, 1024000]
+seed = [0, 1, 2]

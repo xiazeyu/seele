@@ -1,11 +1,12 @@
-name = "13_batch_extreme_a100"
+name = "13_batch_extreme"
 
 [base]
 steps = 4000
 
 [measure]
 measure_ckpts = ["100"]
-nfe = [512, 1024]
+nfe = [1024, 2048]
+sample_precision = "fp32"
 nn_band = 0.03
 
 [[grid]]

@@ -1,0 +1,27 @@
+name = "27_long"
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [1024, 2048]
+sample_precision = "fp32"
+nn_band = 0.03
+
+[[grid]]
+batch = 4194304
+steps = 64000
+seed = [0, 1, 2]
+
+[[grid]]
+hidden = [2048, 1024]
+depth = [7, 32]
+zip = ["hidden", "depth"]
+steps = 4000
+seed = 0
+
+[[grid]]
+hidden = 256
+depth = 32
+steps = 1024000
+seed = [0, 1, 2]
+nfe = [2048]
+nn_band = 0.0

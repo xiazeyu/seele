@@ -1,4 +1,4 @@
-name = "16_arch_extreme_a100"
+name = "16_arch_extreme"
 
 [base]
 steps = 4000
@@ -7,13 +7,14 @@ seed = 0
 
 [measure]
 measure_ckpts = ["100"]
-nfe = [512, 1024]
+nfe = [1024, 2048]
+sample_precision = "fp32"
 nn_band = 0.03
 
 [[grid]]
-hidden = [1024, 2048, 4096]
+hidden = 1024
 depth = 7
 
 [[grid]]
 hidden = 1024
-depth = [14, 28]
+depth = 16

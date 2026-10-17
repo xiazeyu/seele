@@ -1,0 +1,24 @@
+name = "18_arch_steps"
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [2048]
+sample_precision = "fp32"
+
+[[grid]]
+hidden = 256
+depth = [3, 7, 16]
+steps = [64000, 256000, 1024000]
+seed = [0, 1, 2]
+
+[[grid]]
+hidden = 256
+depth = 32
+steps = [64000, 256000]
+seed = [0, 1, 2]
+
+[[grid]]
+depth = 7
+hidden = [128, 512, 1024]
+steps = [64000, 256000]
+seed = [0, 1, 2]

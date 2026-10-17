@@ -1,0 +1,19 @@
+name = "24_data_replicates"
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [2048]
+sample_precision = "fp32"
+nn_band = 0.03
+
+[[grid]]
+time_cond = ["concat", "film"]
+steps = [256000, 1024000]
+data_seed = [1, 2]
+seed = [0, 1, 2]
+
+[[grid]]
+time_cond = ["concat", "film"]
+n_train = 2000000
+steps = 1024000
+seed = [0, 1, 2]

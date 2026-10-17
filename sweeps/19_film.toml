@@ -1,0 +1,37 @@
+name = "19_film"
+
+[measure]
+measure_ckpts = ["100"]
+nfe = [2048]
+sample_precision = "fp32"
+nn_band = 0.03
+
+[[grid]]
+time_cond = ["concat", "film"]
+lr = [5e-4, 1e-3, 2e-3, 2.8e-3]
+seed = [0, 1, 2]
+
+[[grid]]
+time_cond = ["concat", "film"]
+lr = [1e-3, 2e-3]
+steps = [64000, 256000, 1024000, 2048000]
+seed = [0, 1, 2]
+
+[[grid]]
+time_cond = ["concat", "film"]
+depth = 7
+steps = [256000, 1024000]
+seed = [0, 1, 2]
+
+[[grid]]
+dataset = "iface30"
+time_cond = ["concat", "film"]
+steps = [256000, 1024000]
+seed = [0, 1, 2]
+
+[[grid]]
+hidden = 280
+time_cond = "concat"
+lr = [1e-3, 2e-3]
+steps = [256000, 1024000]
+seed = [0, 1, 2]
